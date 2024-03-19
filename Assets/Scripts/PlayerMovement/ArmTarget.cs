@@ -11,8 +11,8 @@ public enum ArmState
 }
 public class ArmTarget : MonoBehaviour
 {
-    [HideInInspector] public Vector3 positionWhenControlled;
     [SerializeField] private ArmTarget otherArm;
+    [SerializeField] private Transform handTransform;
     [SerializeField] private float moveSpeed;
     [SerializeField] private Vector2 moveBounds;
     public ArmState state;
@@ -38,13 +38,13 @@ public class ArmTarget : MonoBehaviour
     {
         Vector2 maxPos = new Vector2
         {
-            x = positionWhenControlled.x + bounds.x,
-            y = positionWhenControlled.y + bounds.y
+            x = handTransform.position.x + bounds.x,
+            y = handTransform.position.y + bounds.y
         }; 
         Vector2 minPos = new Vector2
         {
-            x = positionWhenControlled.x - bounds.x,
-            y = positionWhenControlled.y - bounds.y
+            x = handTransform.position.x - bounds.x,
+            y = handTransform.position.y - bounds.y
         };
 
         float x = transform.position.x + Input.GetAxis("Mouse X") * moveSpeed * Time.deltaTime;

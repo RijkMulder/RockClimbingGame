@@ -35,12 +35,10 @@ public class PlayerMovement : MonoBehaviour
     {
         if (Input.GetMouseButtonUp(button))
         {
-            armTarget.positionWhenControlled = armTarget.transform.position;
             armTarget.state = ArmState.Free;
         }
         else if (Input.GetMouseButtonDown(button))
         {
-            armTarget.positionWhenControlled = armTarget.transform.position;
             armTarget.state = ArmState.Searching;
         }
     }
