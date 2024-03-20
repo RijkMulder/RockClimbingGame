@@ -1992,7 +1992,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 849895696}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.248483, y: 0.000000018633964, z: -0.0000000047801465, w: 0.9686363}
+  m_LocalRotation: {x: 0.248483, y: -0.000000018633964, z: 0.0000000047801465, w: 0.9686363}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -6861,7 +6861,8 @@ MonoBehaviour:
   armTargetRight: {fileID: 192878653}
   armAlign: {fileID: 1897258752}
   maxYDistance: 0.5
-  maxXDistance: 3
+  maxXDistance: 0.5
+  xOffset: 3.5
   climbTime: 0.3
 --- !u!54 &9099099296578234845
 Rigidbody:

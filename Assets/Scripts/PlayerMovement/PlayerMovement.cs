@@ -12,6 +12,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private Transform armAlign;
     [SerializeField] private float maxYDistance;
     [SerializeField] private float maxXDistance;
+    [SerializeField] private float xOffset;
     [SerializeField] private float climbTime;
     private Coroutine moveCoroutine;
     private void Awake()
@@ -27,6 +28,7 @@ public class PlayerMovement : MonoBehaviour
     {
         HandleArmInput(0, armTargetLeft);
         HandleArmInput(1, armTargetRight);
+        Debug.Log(armTargetLeft.transform.position.x - transform.position.x);
     }
     private void HandleArmInput(int button, ArmTarget armTarget)
     {
@@ -46,7 +48,7 @@ public class PlayerMovement : MonoBehaviour
     private void CheckArmDistance(ArmTarget armTarget)
     {
         ArmTarget otherArm = armTarget == armTargetLeft ? armTargetRight : armTargetLeft;
-        float xMultiplier = otherArm.transform.position == armTarget.transform.position ? 1f : maxXDistance;
+        float xMultiplier = otherArm.transform.position == armTarget.transform.position ? 1f : xOffset;
 
         // get positions
         Vector3 armPos = armTarget.transform.position;
@@ -60,14 +62,18 @@ public class PlayerMovement : MonoBehaviour
             z = transform.position.z
         };
 
-        // adjust target y pos
+        // adjust target pos
         Vector3 armAlignTargetPos = armAlign.transform.position + (targetPos - transform.position);
         float distance = Vector3.Distance(otherArm.transform.position, armAlignTargetPos);
+        float distanceX = otherArm.transform.position.x - armAlignTargetPos.x;
         if (distance > maxYDistance)
         {
             targetPos.y -= targetPos.y > transform.position.y ? distance - maxYDistance : -(distance - maxYDistance);
         }
-
+        if (distanceX > maxXDistance)
+        {
+            targetPos.x -= targetPos.x > transform.position.x ? distanceX - maxXDistance : -(distanceX - maxXDistance);
+        }
         if (moveCoroutine != null) StopCoroutine(moveCoroutine);
         moveCoroutine = StartCoroutine(MovePlayer(targetPos));
     }
