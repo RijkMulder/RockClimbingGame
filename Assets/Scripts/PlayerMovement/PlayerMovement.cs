@@ -4,32 +4,29 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
-    // both buttons need to be clicked to start game
-    private bool StartGame = false;
+    public static PlayerMovement Instance;
 
     // hands
     [SerializeField] private ArmTarget armTargetLeft;
     [SerializeField] private ArmTarget armTargetRight;
     [SerializeField] private Transform armAlign;
+    [SerializeField] private float maxYDistance;
+    [SerializeField] private float maxXDistance;
+    [SerializeField] private float climbTime;
     private Coroutine moveCoroutine;
+    private void Awake()
+    {
+        Instance = this;
+    }
     private void Start()
     {
         armTargetLeft.OnArmSnap += () => CheckArmDistance(armTargetLeft);
         armTargetRight.OnArmSnap += () => CheckArmDistance(armTargetRight);
-        Cursor.lockState = CursorLockMode.Locked;
     }
     private void Update()
     {
-        if (Input.GetMouseButton(0) && Input.GetMouseButton(1))
-        {
-            StartGame = true;
-        }
-
-        if (StartGame)
-        {
-            HandleArmInput(0, armTargetLeft);
-            HandleArmInput(1, armTargetRight);
-        }
+        HandleArmInput(0, armTargetLeft);
+        HandleArmInput(1, armTargetRight);
     }
     private void HandleArmInput(int button, ArmTarget armTarget)
     {
@@ -48,15 +45,28 @@ public class PlayerMovement : MonoBehaviour
     /// <param name="armTarget"></param>
     private void CheckArmDistance(ArmTarget armTarget)
     {
-        float armY = armTarget.transform.position.y;
-        float alignY = armAlign.position.y;
+        ArmTarget otherArm = armTarget == armTargetLeft ? armTargetRight : armTargetLeft;
+        float xMultiplier = otherArm.transform.position == armTarget.transform.position ? 1f : maxXDistance;
 
+        // get positions
+        Vector3 armPos = armTarget.transform.position;
+        Vector3 alignPos = armAlign.position;
+
+        // set base target pos
         Vector3 targetPos = new Vector3
         {
-            x = transform.position.x,
-            y = transform.position.y + (armY - alignY),
+            x = transform.position.x + ((armPos.x - alignPos.x) / xMultiplier),
+            y = transform.position.y + (armPos.y - alignPos.y),
             z = transform.position.z
         };
+
+        // adjust target y pos
+        Vector3 armAlignTargetPos = armAlign.transform.position + (targetPos - transform.position);
+        float distance = Vector3.Distance(otherArm.transform.position, armAlignTargetPos);
+        if (distance > maxYDistance)
+        {
+            targetPos.y -= targetPos.y > transform.position.y ? distance - maxYDistance : -(distance - maxYDistance);
+        }
 
         if (moveCoroutine != null) StopCoroutine(moveCoroutine);
         moveCoroutine = StartCoroutine(MovePlayer(targetPos));
@@ -64,11 +74,12 @@ public class PlayerMovement : MonoBehaviour
     private IEnumerator MovePlayer(Vector3 targetPos)
     {
         float t = 0;
-        while (t < 1)
+        Vector3 startPos = transform.position;  
+        while (t < climbTime)
         {
             t += Time.deltaTime;
-
-            transform.position = Vector3.Lerp(transform.position, targetPos, t);
+            float prc = t / climbTime;
+            transform.position = Vector3.Slerp(startPos, targetPos, prc);
             yield return null;
         }
         moveCoroutine = null;

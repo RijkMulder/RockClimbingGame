@@ -20,6 +20,10 @@ public class ArmTarget : MonoBehaviour
 
     public delegate void ArmCheckDelegate();
     public ArmCheckDelegate OnArmSnap;
+    private void Start()
+    {
+        state = ArmState.Searching;
+    }
     private void Update()
     {
         switch (state)
