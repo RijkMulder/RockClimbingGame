@@ -15,6 +15,7 @@ public class ArmTarget : MonoBehaviour
     [SerializeField] private Transform handTransform;
     [SerializeField] private float moveSpeed;
     [SerializeField] private Vector2 moveBounds;
+    public IKFootSolver crossFoot;
     public ArmState state;
     public float handOffset;
 

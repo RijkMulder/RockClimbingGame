@@ -10,10 +10,12 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private ArmTarget armTargetLeft;
     [SerializeField] private ArmTarget armTargetRight;
     [SerializeField] private Transform armAlign;
+    [SerializeField] private Transform headTransform;
     [SerializeField] private float maxYDistance;
     [SerializeField] private float maxXDistance;
     [SerializeField] private float xOffset;
     [SerializeField] private float climbTime;
+    private Transform currentHand;
     private Coroutine moveCoroutine;
     private void Awake()
     {
@@ -26,15 +28,16 @@ public class PlayerMovement : MonoBehaviour
     }
     private void Update()
     {
+        if (currentHand != null) LookAtHand(currentHand);
         HandleArmInput(0, armTargetLeft);
         HandleArmInput(1, armTargetRight);
-        Debug.Log(armTargetLeft.transform.position.x - transform.position.x);
     }
     private void HandleArmInput(int button, ArmTarget armTarget)
     {
         if (Input.GetMouseButtonUp(button))
         {
             armTarget.state = ArmState.Free;
+            currentHand = armTarget.transform;
         }
         else if (Input.GetMouseButtonDown(button))
         {
@@ -75,9 +78,9 @@ public class PlayerMovement : MonoBehaviour
             targetPos.x -= targetPos.x > transform.position.x ? distanceX - maxXDistance : -(distanceX - maxXDistance);
         }
         if (moveCoroutine != null) StopCoroutine(moveCoroutine);
-        moveCoroutine = StartCoroutine(MovePlayer(targetPos));
+        moveCoroutine = StartCoroutine(MovePlayer(targetPos, armTarget));
     }
-    private IEnumerator MovePlayer(Vector3 targetPos)
+    private IEnumerator MovePlayer(Vector3 targetPos, ArmTarget arm)
     {
         float t = 0;
         Vector3 startPos = transform.position;  
@@ -88,6 +91,12 @@ public class PlayerMovement : MonoBehaviour
             transform.position = Vector3.Slerp(startPos, targetPos, prc);
             yield return null;
         }
+        arm.crossFoot.MoveFoot();
         moveCoroutine = null;
+    }
+    private void LookAtHand(Transform target)
+    {
+        Quaternion targetRot = Quaternion.LookRotation(target.position - headTransform.position);
+        headTransform.rotation = Quaternion.Slerp(headTransform.rotation, targetRot, 10 * Time.deltaTime);
     }
 }
