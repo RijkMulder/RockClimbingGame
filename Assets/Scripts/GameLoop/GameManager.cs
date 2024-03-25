@@ -5,8 +5,13 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
+    public static GameManager instance;
     private PlayerMovement playerMovement;
 
+    private void Awake()
+    {
+        instance = this;
+    }
     private void Start()
     {
         playerMovement = PlayerMovement.Instance;
@@ -19,5 +24,11 @@ public class GameManager : MonoBehaviour
         {
             playerMovement.enabled = true;
         }
+    }
+    public void ResetPlayer()
+    {
+        //playerMovement.ResetPosition();
+        //playerMovement.Fall(false);
+        //playerMovement.playerState = EPlayerState.Climbing;
     }
 }

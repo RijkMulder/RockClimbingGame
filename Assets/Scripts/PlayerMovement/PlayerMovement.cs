@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public enum EPlayerState
@@ -11,10 +12,12 @@ public enum EPlayerState
 public class PlayerMovement : MonoBehaviour
 {
     public static PlayerMovement Instance;
-    private EPlayerState playerState;
+    public EPlayerState playerState;
 
     [SerializeField] private ArmTarget armTargetLeft;
     [SerializeField] private ArmTarget armTargetRight;
+    [SerializeField] private IKFootSolver leftFootTarget;
+    [SerializeField] private IKFootSolver rightFootTarget;
     [SerializeField] private Transform armAlign;
     [SerializeField] private Transform headTransform;
 
@@ -45,11 +48,12 @@ public class PlayerMovement : MonoBehaviour
     private void HandleArmInput(int button, ArmTarget armTarget)
     {
         ArmTarget otherArm = armTarget == armTargetLeft ? armTargetRight : armTargetLeft;
+        if (otherArm.state == ArmState.Snapped) Fall(false);
         if (Input.GetMouseButtonUp(button))
         {
             if (otherArm.state == ArmState.Free)
             {
-                Fall();
+                Fall(true);
                 playerState = EPlayerState.Falling;
             }
             armTarget.state = ArmState.Free;
@@ -115,12 +119,8 @@ public class PlayerMovement : MonoBehaviour
         Quaternion targetRot = Quaternion.LookRotation(target.position - headTransform.position);
         headTransform.rotation = Quaternion.Slerp(headTransform.rotation, targetRot, 10 * Time.deltaTime);
     }
-    private void Fall()
+    public void Fall(bool state)
     {
-        rb.useGravity = true;
-    }
-    private void OnTriggerEnter(Collider other)
-    {
-        
+        rb.isKinematic = !state;
     }
 }
