@@ -1,20 +1,29 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
+public enum EPlayerState
+{
+    Climbing,
+    Falling
+}
 public class PlayerMovement : MonoBehaviour
 {
     public static PlayerMovement Instance;
+    private EPlayerState playerState;
 
-    // hands
     [SerializeField] private ArmTarget armTargetLeft;
     [SerializeField] private ArmTarget armTargetRight;
     [SerializeField] private Transform armAlign;
     [SerializeField] private Transform headTransform;
+
     [SerializeField] private float maxYDistance;
     [SerializeField] private float maxXDistance;
     [SerializeField] private float xOffset;
     [SerializeField] private float climbTime;
+
+    private Rigidbody rb;
     private Transform currentHand;
     private Coroutine moveCoroutine;
     private void Awake()
@@ -25,6 +34,7 @@ public class PlayerMovement : MonoBehaviour
     {
         armTargetLeft.OnArmSnap += () => CheckArmDistance(armTargetLeft);
         armTargetRight.OnArmSnap += () => CheckArmDistance(armTargetRight);
+        rb = GetComponent<Rigidbody>();
     }
     private void Update()
     {
@@ -34,8 +44,14 @@ public class PlayerMovement : MonoBehaviour
     }
     private void HandleArmInput(int button, ArmTarget armTarget)
     {
+        ArmTarget otherArm = armTarget == armTargetLeft ? armTargetRight : armTargetLeft;
         if (Input.GetMouseButtonUp(button))
         {
+            if (otherArm.state == ArmState.Free)
+            {
+                Fall();
+                playerState = EPlayerState.Falling;
+            }
             armTarget.state = ArmState.Free;
             currentHand = armTarget.transform;
         }
@@ -98,5 +114,13 @@ public class PlayerMovement : MonoBehaviour
     {
         Quaternion targetRot = Quaternion.LookRotation(target.position - headTransform.position);
         headTransform.rotation = Quaternion.Slerp(headTransform.rotation, targetRot, 10 * Time.deltaTime);
+    }
+    private void Fall()
+    {
+        rb.useGravity = true;
+    }
+    private void OnTriggerEnter(Collider other)
+    {
+        
     }
 }
