@@ -2,11 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Net.Sockets;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager instance;
     private PlayerMovement playerMovement;
+    [SerializeField] private GameObject startGameUI;
+    [SerializeField] private GameObject gameUI;
 
     private void Awake()
     {
@@ -23,6 +26,13 @@ public class GameManager : MonoBehaviour
         if (Input.GetMouseButton(0) && Input.GetMouseButton(1))
         {
             playerMovement.enabled = true;
+            startGameUI.SetActive(false);
+            gameUI.SetActive(true);
+        }
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            string thisScene = SceneManager.GetActiveScene().name;
+            SceneManager.LoadScene(thisScene);
         }
     }
     public void ResetPlayer()
