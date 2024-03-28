@@ -10,9 +10,9 @@ public class StartCollider : MonoBehaviour
     {
         gm = GameManager.instance;
     }
-    private void OnTriggerEnter(Collider other)
+    private void OnCollisionEnter(Collision collision)
     {
-        if (other.TryGetComponent(out PlayerMovement player))
+        if (collision.transform.TryGetComponent(out PlayerMovement player))
         {
             if (player.playerState == EPlayerState.Falling)
             {

@@ -13,6 +13,7 @@ public class ArmTarget : MonoBehaviour
 {
     [SerializeField] private ArmTarget otherArm;
     [SerializeField] private Transform handTransform;
+    [SerializeField] private Transform armAlign;
     [SerializeField] private float moveSpeed;
     [SerializeField] private Vector2 moveBounds;
     public IKFootSolver crossFoot;
@@ -57,5 +58,11 @@ public class ArmTarget : MonoBehaviour
         x = Mathf.Clamp(x, minPos.x, maxPos.x);
         y = Mathf.Clamp(y, minPos.y, maxPos.y);
         transform.position = new Vector3(x, y, transform.position.z); 
+    }
+    public void ResetArm()
+    {
+        int dir = transform.position.x > armAlign.position.x ? 1 : -1;
+        transform.position = new Vector3(armAlign.position.x + (0.5f * dir), armAlign.position.y, transform.position.z);
+        state = ArmState.Free;
     }
 }

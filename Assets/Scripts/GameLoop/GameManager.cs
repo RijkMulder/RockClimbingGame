@@ -10,6 +10,7 @@ public class GameManager : MonoBehaviour
     private PlayerMovement playerMovement;
     [SerializeField] private GameObject startGameUI;
     [SerializeField] private GameObject gameUI;
+    public bool playerFalling;
 
     private void Awake()
     {
@@ -23,7 +24,7 @@ public class GameManager : MonoBehaviour
     }
     private void Update()
     {
-        if (Input.GetMouseButton(0) && Input.GetMouseButton(1))
+        if (Input.GetMouseButton(0) && Input.GetMouseButton(1) && !playerFalling)
         {
             playerMovement.enabled = true;
             startGameUI.SetActive(false);
@@ -37,8 +38,9 @@ public class GameManager : MonoBehaviour
     }
     public void ResetPlayer()
     {
-        //playerMovement.ResetPosition();
-        //playerMovement.Fall(false);
-        //playerMovement.playerState = EPlayerState.Climbing;
+        playerMovement.rb.isKinematic = true;
+        playerMovement.playerState = EPlayerState.Climbing;
+        playerMovement.ResetLimbs();
+        playerFalling = false;
     }
 }

@@ -8,6 +8,7 @@ public class IKFootSolver : MonoBehaviour
     [SerializeField] private IKFootSolver otherFoot;
     [SerializeField] private float moveTime;
     [SerializeField] private Transform newFootTarget;
+    [SerializeField] private Transform groundPos;
     [SerializeField] private float maxDistance;
     private Coroutine moveCoroutine;
     public void MoveFoot()
@@ -37,5 +38,10 @@ public class IKFootSolver : MonoBehaviour
         }
         TryMoveOtherFoot();
         moveCoroutine = null;
+    }
+    public void ResetFoot()
+    {
+        Debug.Log("kurwa");
+        transform.position = groundPos.position;
     }
 }
